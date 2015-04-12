@@ -204,8 +204,6 @@ function addToDoToDOM041015a (key,toDoObj) {
 	// don't forget to assign toDoObj to $newTask
 	var $newTask = toDoObj;
 
-	// createToDo041015a();
-
 	// prepend your (now hidden) jQuery object into the element with id #todo-list
 	$('#todo-list').prepend($newTask);
 
@@ -217,14 +215,13 @@ function addToDoToDOM041015a (key,toDoObj) {
 
 function newToDoDialogBoxV1c () {
 	// IMPLEMENT LOCAL STORAGE
-	// use createToDo041015a()
 	
 	$('#new-todo').dialog({
 		modal: true,
 		autoOpen: false,
 		buttons: {
 			// create Add Task button
-			"Add task": function (event) {
+			"Add task": function (event, ui) {
 
 				// the code would be better served by taking the code and storing it in another function
 
@@ -236,16 +233,7 @@ function newToDoDialogBoxV1c () {
 				createToDo041015b();
 
 
-				// $(this).click(function(event) {
-				// 	// press Enter to also enter an item
-				// 	// addTaskhandleKeyPressV1(event);
-				// 	addTaskhandleKeyPressV2(event);
-				// });
-
-				// press Enter to also enter an item
-				// addTaskhandleKeyPressV1(event);
-				// addTaskhandleKeyPressV2(event);
-				// addTaskhandleKeyPressV3(event);
+				// addTaskhandleKeyPressV3(event,ui);
 
 				// close the dialog box
 				$(this).dialog('close');
@@ -262,6 +250,10 @@ function newToDoDialogBoxV1c () {
 		close:function () {
 			// set the value of the #new-todo input field to an empty string which erases the field... whenever the dialog box is closed
 			$('#new-todo input').val('');
+		},
+		// when the dialog box is created do the following...
+		create: function (event,ui) {
+			// body...
 		}
 	});
 }
@@ -319,6 +311,7 @@ function createDoneToDo041115a (keyID,valueID) {
 
 	var taskHTML = '<li><span class="done">%</span>';
 	taskHTML += '<span class="delete">x</span>';
+	taskHTML += '<span class="edit">Edit</span>';
 	taskHTML += '<span class="task">Bake cake</span></li>';
 	var $doneTask = $(taskHTML);
 
@@ -353,36 +346,18 @@ function makeListSortableV1 () {
 		placeholder: 'ui-state-highlight',
 		// identify which elements on the sortable item won't work as handlers
 		cancel: '.delete,.done',
-		activate: function (event, ui) {
-			// body...
-		},
+		// activate: function (event, ui) {
+		// 	updateListLocation(event, ui);
+		// },
 		stop: function (event, ui) {
-			// must figure out a way to change the to do and done arrays to reflect the object's status if it's moved between the To Do and the Completed Lists
-			// say it has stopped... determine which list it is on and add it to that rolodex array while removing it from its previous one
-			
-			// NOTE:  $(this) doesn't work in jQuery UI in these options... you must use the ui object... specifically ui.item in this case
-
-			// find the list ID... is it .completed-list or .todo-list
-			// var determineList = $(this).parents('ul').attr('id');
-			var determineList = ui.item.parents('ul').attr('id');
-			console.log("The final list ID is: ", determineList);
-			
-			// grab unique task key
-			// ui.item is a jQuery object with several elements, you must run a find() to extract data
-			var key = ui.item.find('.task').attr('id');
-			console.log('Task Item Key: ',key);
-
-			switch(determineList) {
-				case 'completed-list':
-					removeFromToDoArray(key);
-					addDoneArray(key);
-					break;
-				case 'todo-list':
-					removeFromDoneArray(key);
-					addToDoArray(key);
-					break;
-			}
-		}
+			updateListLocation(event, ui);
+		},
+		// change: function (event, ui) {
+		// 	updateListLocation(event, ui);
+		// },
+		// update: function (event, ui) {
+		// 	updateListLocation(event, ui);
+		// }
 	});
 }
 
@@ -416,10 +391,10 @@ function addTaskhandleKeyPressV2 (e) {
 	}
 }
 
-function addTaskhandleKeyPressV3 (e) {
-	if (e.keyCode === 13) {
+function addTaskhandleKeyPressV3 (event, ui) {
+	if (event.keyCode === 13) {
 		createToDo041015b();
-		$(this).dialog('close');
+		ui.item.dialog('close');
 	}
 }
 
@@ -655,6 +630,34 @@ function removeFromLocalStorage (key) {
 
 function addToLocalStorage (key,item) {
 	localStorage.setItem(key,item);
+}
+
+function updateListLocation (event,ui) {
+	// must figure out a way to change the to do and done arrays to reflect the object's status if it's moved between the To Do and the Completed Lists
+	// say it has stopped... determine which list it is on and add it to that rolodex array while removing it from its previous one
+	
+	// NOTE:  $(this) doesn't work in jQuery UI in these options... you must use the ui object... specifically ui.item in this case
+
+	// find the list ID... is it .completed-list or .todo-list
+	// var determineList = $(this).parents('ul').attr('id');
+	var determineList = ui.item.parents('ul').attr('id');
+	console.log("The final list ID is: ", determineList);
+	
+	// grab unique task key
+	// ui.item is a jQuery object with several elements, you must run a find() to extract data
+	var key = ui.item.find('.task').attr('id');
+	console.log('Task Item Key: ',key);
+
+	switch(determineList) {
+		case 'completed-list':
+			removeFromToDoArray(key);
+			addDoneArray(key);
+			break;
+		case 'todo-list':
+			removeFromDoneArray(key);
+			addToDoArray(key);
+			break;
+	}
 }
 
 /////////////////////////////////////////////
