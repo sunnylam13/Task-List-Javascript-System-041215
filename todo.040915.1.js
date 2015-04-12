@@ -334,6 +334,115 @@ function createToDo041015b (keyID,valueID) {
 
 }
 
+function createToDo041015c (keyID,valueID) {
+
+	// in this version we add the ability to Edit the task within each item
+
+	// apparently the way this function is written, it can only be used to create a new to do item unless you give it the ability to take arguments like key, value and write conditionals that set var key and var taskname 
+
+	// this would be used within addToDoToDOM041015a() for example in this situation
+	// actually we use this with the dialog function "Add Task"
+	
+	// access the toDoArray
+	var toDoArray = getToDoArray();
+
+	// you could have used one line however it would have been hard to read
+	// this is a better practice
+	var taskHTML = '<li><span class="done">%</span>';
+	taskHTML += '<span class="delete">x</span>';
+	taskHTML += '<span class="edit">Edit</span>';
+	taskHTML += '<span class="task">Bake cake</span></li>';
+
+	// you store the html as a new jQuery created element in var $newTask
+	// this is a new DOM element
+	// also turns this string into a jQuery object so you can apply regular jQuery functions on it
+	// the $ in front of $newTask denotes that it holds a jQuery object
+	var $newTask = $(taskHTML);
+
+	// check if arguments were supplied for creating a new task item
+	// keyID != null && valueID != null
+	if ((!keyID) && (!valueID)) {
+		
+		// create unique key identifier for to do item
+		var currentDate = new Date();
+		var time = currentDate.getTime();
+		var key = "todo_" + time;
+
+		// get the value/text entered by the user for the todo item
+		var taskName = $('#task').val();
+		console.log('This is the user to do input: ', taskName);
+
+		// you add error checking
+		// you don't want an empty field
+		if (taskName === '') {
+			return false;
+			// exits function
+			// dialog remains open
+			// nothing else will happen after this
+		}
+
+		// search through the jQuery object stored in $newTask
+		// find the element with class .task
+		// change the text to match var taskName
+		// if you tried to do this above with var taskHTML it's possible to break the code if someone enters something like <script>alert('ha,ha,ha)</script>
+		// using text() acts as a safety filter
+		// $newTask.find('.task').text(taskName);
+		
+
+		// also add a unique identifier ID# for later retrieval
+		// we want to tag the li which is the item we intend to insert
+		// $newTask.find('li').attr('id', key);
+
+
+		$newTask.find('.task').text(taskName).attr('id', key);
+
+
+		// more efficient combination
+		// since li is the parent I don't have to use .end() to reset anything before using find('.task')
+		// $newTask.find('li').attr('id', key).find('.task').text(taskName);
+
+		// hide this jQuery object DOM code
+		// so you can later reveal it with animations
+		$newTask.hide();
+
+		
+		// store unique key signature for later cross-reference and retrieval
+		// we're pushing this into our reference rolodex
+		toDoArray.push(key);
+
+		// store the actual jQuery item object into localStorage as well
+		// tag this object with the unique key
+		// Uncaught TypeError: Converting circular structure to JSON
+		// You should not convert a DOM element to JSON directly. http://stackoverflow.com/questions/21234436/uncaught-typeerror-converting-circular-structure-to-json
+		// which means wha I should store is the text() extraction
+		// what we really want to do is store the task name into localStorage so we can regenerate the task item upon window load
+		// localStorage.setItem(key,taskName);
+		addToLocalStorage(key,taskName);
+		// having issues storing the value associated with the key
+		console.log('This task was stored locally: ',taskName);
+
+		// store toDoArray into localStorage (i.e. your reference rolodex)
+		// localStorage.setItem("toDoArray",JSON.stringify(toDoArray));
+		addToLocalStorage("toDoArray",JSON.stringify(toDoArray));
+
+		// at this point we'd run a function to actually put the to do into the DOM
+		// because key anv 
+		// addToDoToDOM041015a();
+		// we've designed it such that the dialog button will do this and the addToDoToDOM041015a function will run this create function instead
+		addToDoToDOM041015a(key,$newTask);
+
+	} else {
+		
+		// alter the base task to reflect key-value pair from localStorage
+		$newTask.find('.task').text(valueID).attr('id', keyID);
+		// hide the task
+		$newTask.hide();
+		// once created it must be added to the DOM
+		addToDoToDOM041015a(key,$newTask);
+	}
+
+}
+
 function addToDoToDOM041015a (key,toDoObj) {
 
 	// don't forget to assign toDoObj to $newTask
@@ -507,7 +616,7 @@ function newToDoDialogBoxV1c () {
 		autoOpen: false,
 		buttons: {
 			// create Add Task button
-			"Add task": function () {
+			"Add task": function (event) {
 
 				// the code would be better served by taking the code and storing it in another function
 
@@ -517,6 +626,18 @@ function newToDoDialogBoxV1c () {
 				// you supply no args to this function because within it, it generates the key:value pair that runs addToDoToDOM041015a()
 				// createToDo041015a();
 				createToDo041015b();
+
+
+				// $(this).click(function(event) {
+				// 	// press Enter to also enter an item
+				// 	// addTaskhandleKeyPressV1(event);
+				// 	addTaskhandleKeyPressV2(event);
+				// });
+
+				// press Enter to also enter an item
+				// addTaskhandleKeyPressV1(event);
+				// addTaskhandleKeyPressV2(event);
+				// addTaskhandleKeyPressV3(event);
 
 				// close the dialog box
 				$(this).dialog('close');
@@ -814,6 +935,26 @@ function addTaskhandleKeyPressV1 (e) {
 		$(this).click();
 		// $(this).dialog('close');
 		// return false;
+	}
+}
+
+function addTaskhandleKeyPressV2 (e) {
+
+	$addTaskText = $('.ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-button-text').val();
+
+	if ($addTaskText == "Add task") {
+		if (e.keyCode === 13) {
+				$('.ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-button-text').click();
+				// $(this).dialog('close');
+				// return false;
+			}
+	}
+}
+
+function addTaskhandleKeyPressV3 (e) {
+	if (e.keyCode === 13) {
+		createToDo041015b();
+		$(this).dialog('close');
 	}
 }
 
