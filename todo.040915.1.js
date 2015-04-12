@@ -231,7 +231,8 @@ function createToDo041015b (keyID,valueID,status) {
 }
 
 function addToDoToDOM041015a (key,toDoObj,status) {
-
+	// it's almost guaranteed that the first 2 args must be supplied so there usually won't be the same issue as with createToDo041015b()
+	
 	switch(status) {
 		case "new":
 			// don't forget to assign toDoObj to $newTask
@@ -557,7 +558,10 @@ function clearStorage () {
 	localStorage.clear();
 	// force the page to refresh after the storage is cleared instead of having to manually do so
 	// if you place the reload in the clearStorageButtonEnable it will constantly erase localStorage
-	// window.reload();
+	
+	// after the localStorage is cleared, reload the window so the user doesn't have to (and they won't be scratching their head about what to do next)
+	// window.reload() doesn't work
+	location.reload();
 }
 
 function clearAllToDoButtonV1 () {
