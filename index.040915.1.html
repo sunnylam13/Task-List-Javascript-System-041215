@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My To-Do List</title>
+
+<!-- reference:  JJMM3e: 532/530 -->
+
+<link href="css/todo.css" rel="stylesheet">
+<link href="css/jquery-ui.min.css" rel="stylesheet">
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+
+
+<!-- ====================================
+CUSTOM CSS STYLING 
+==================================== -->
+
+<style>
+	
+	
+	
+	.edit {
+		float: right;
+		margin-top: 0.15em;
+		margin-right: 1em;
+		font-size: 12px;
+		display: inline-block;
+		cursor: pointer;
+		/*border: 1px solid rgba(0, 0, 0, 0.2);*/
+		/*padding: 0.1em 0.2em 0.1em 0.1em;*/
+	}
+
+		.edit:hover {
+			color: red;
+		}
+
+
+	#clear-all-todo {
+		position: absolute;
+		left: -175px;
+		top: 100px;
+	}
+
+</style>
+
+<!-- ====================================== -->
+
+
+
+<!-- ====================================
+CUSTOM JS FILE 
+==================================== -->
+<!-- list last because it relies on other JS to be loaded before it -->
+<script src='todo.040915.1.js'></script>
+
+<!-- ====================================== -->
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="to-do">
+<h1>My To-do List</h1>
+<!-- add button here -->
+<!-- ====================================
+BUTTON TO ADD NEW TASK 
+==================================== -->
+<button id="add-todo">Add to-do item</button>
+<!-- ====================================== -->
+
+<!-- ====================================
+BUTTON CLEAR ALL TO DO'S 
+==================================== -->
+<button id="clear-all-todo">Clear all to-do items</button>
+<!-- ====================================== -->
+
+
+<h2>To Be Done</h2>
+
+<!-- ====================================
+TO DO TASK LIST 
+==================================== -->
+
+<!-- <ul id="todo-list">
+  
+</ul> -->
+
+<ul id="todo-list" class='sortlist'>
+
+	<!-- ====================================
+	TESTING:  TO DO STYLING 
+	==================================== -->
+	<!-- this is for style testing so I don't have to reload all the time; comment out when not in use -->
+	<!-- <li><span class="done">%</span><span class="delete">x</span><span class="task">Bake cake</span></li> -->
+	<!-- <li>
+		<span class="done">%</span>
+		<span class="delete">x</span>
+		<span class="edit">Edit</span>
+		<span class="task">Bake cake</span>
+	</li> -->
+	<!-- ====================================== -->
+	
+
+</ul>
+
+<!-- ====================================== -->
+
+</div>
+<div id="completed">
+
+
+
+<h2>Completed Tasks</h2>
+
+<!-- ====================================
+COMPLETED TASK LIST 
+==================================== -->
+
+<!-- <ul id="completed-list">
+  
+</ul> -->
+
+<ul id="completed-list" class='sortlist'>
+  
+</ul>
+
+<!-- ====================================== -->
+
+</div>
+
+
+<!-- add dialog box here -->
+<!-- ====================================
+DIALOG BOX - ADD TASK
+==================================== -->
+
+<div id="new-todo" title="Add to-do item">
+	<form action="">
+		<p>
+			<label for="task">Task Name:</label>
+			<input type="text" name="task" id="task">
+		</p>
+	</form>
+</div>
+
+<!-- ====================================== -->
+
+<!-- ====================================
+DIALOG BOX - EDIT TASK
+==================================== -->
+
+<div id="edit-todo" title="Edit to-do item">
+	<form action="">
+		<p>
+			<label for="edit-task">Edit Task:</label>
+			<input type="text" name="edit-task" id="edit-task">
+		</p>
+	</form>
+</div>
+
+<!-- ====================================== -->
+
+</div>
+</body>
+</html>
