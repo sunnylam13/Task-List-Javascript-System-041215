@@ -103,6 +103,11 @@ function createToDo041015b (keyID,valueID,status) {
 	// this would be used within addToDoToDOM041015a() for example in this situation
 	// actually we use this with the dialog function "Add Task"
 	
+	////////////////////////////////////////////
+	///// 		TASK ITEM SKELETON
+	///////////////////////////////////////////////
+	// jQuery object
+
 	// since all tasks items share this code I'm leaving outside of the conditional switch statements
 	// you could have used one line however it would have been hard to read
 	// this is a better practice
@@ -110,16 +115,17 @@ function createToDo041015b (keyID,valueID,status) {
 	taskHTML += '<span class="delete">x</span>';
 	taskHTML += '<span class="edit">Edit</span>';
 	taskHTML += '<span class="task">Bake cake</span></li>';
-
-	// you store the html as a new jQuery created element in var $newTask
-	// this is a new DOM element
-	// also turns this string into a jQuery object so you can apply regular jQuery functions on it
-	// the $ in front of $newTask denotes that it holds a jQuery object
+	
+	///////////////////////////////////////////////
 	
 	switch(status) {
 		case "new":
 			// access the toDoArray
 			var toDoArray = getToDoArray();
+			// you store the html as a new jQuery created element in var $newTask
+			// this is a new DOM element
+			// also turns this string into a jQuery object so you can apply regular jQuery functions on it
+			// the $ in front of $newTask denotes that it holds a jQuery object
 			var $newTask = $(taskHTML);
 
 			// check if arguments were supplied
@@ -146,21 +152,23 @@ function createToDo041015b (keyID,valueID,status) {
 
 				// also add a unique identifier ID# for later retrieval
 				// we want to tag the li which is the item we intend to insert
-				// $newTask.find('li').attr('id', key);
-
 
 				$newTask.find('.task').text(taskName).attr('id', key);
 
 				// attach jQuery UI button function and click function
 				// I want to attach this method here when I actually create the button because if I tried to do it onload it would fail to initialize until the very first time I clicked the button
 				// EXAMPLE:  see editTaskButtonV1b
-				$newTask.find('.edit').button({
-					icons: {
-						primary: 'ui-icon-wrench'
-					}
-				}).click(function() {
-					$('#edit-todo').dialog('open');
-				});
+				// $newTask.find('.edit').button({
+				// 	icons: {
+				// 		primary: 'ui-icon-wrench'
+				// 	}
+				// }).click(function() {
+				// 	$('#edit-todo').dialog('open');
+				// });
+
+				setupButtonV1($newTask,'.edit','ui-icon-wrench','#edit-todo');
+
+
 
 				// hide this jQuery object DOM code
 				// so you can later reveal it with animations
@@ -192,13 +200,15 @@ function createToDo041015b (keyID,valueID,status) {
 				$newTask.find('.task').text(valueID).attr('id', keyID);
 
 				// attach jQuery UI button function and click function
-				$newTask.find('.edit').button({
-					icons: {
-						primary: 'ui-icon-wrench'
-					}
-				}).click(function() {
-					$('#edit-todo').dialog('open');
-				});
+				// $newTask.find('.edit').button({
+				// 	icons: {
+				// 		primary: 'ui-icon-wrench'
+				// 	}
+				// }).click(function() {
+				// 	$('#edit-todo').dialog('open');
+				// });
+
+				setupButtonV1($newTask,'.edit','ui-icon-wrench','#edit-todo');
 
 				// hide the task
 				$newTask.hide();
@@ -213,13 +223,15 @@ function createToDo041015b (keyID,valueID,status) {
 			$doneTask.find('.task').text(valueID).attr('id', keyID);
 
 			// attach jQuery UI button function and click function
-			$doneTask.find('.edit').button({
-				icons: {
-					primary: 'ui-icon-wrench'
-				}
-			}).click(function() {
-				$('#edit-todo').dialog('open');
-			});
+			// $doneTask.find('.edit').button({
+			// 	icons: {
+			// 		primary: 'ui-icon-wrench'
+			// 	}
+			// }).click(function() {
+			// 	$('#edit-todo').dialog('open');
+			// });
+
+			setupButtonV1($doneTask,'.edit','ui-icon-wrench','#edit-todo');
 
 			$doneTask.hide();
 			console.log($doneTask);
@@ -264,8 +276,6 @@ function newToDoDialogBoxV1c () {
 			// create Add Task button
 			"Add task": function (event, ui) {
 				
-				// you supply no args to this function because within it, it generates the key:value pair that runs addToDoToDOM041015a()
-				
 				// yep, passing null as the first 2 args to act as placeholders for the optional keyID, valueID works
 				createToDo041015b(null,null,'new');
 
@@ -284,10 +294,6 @@ function newToDoDialogBoxV1c () {
 		close:function () {
 			// set the value of the #new-todo input field to an empty string which erases the field... whenever the dialog box is closed
 			$('#new-todo input').val('');
-		},
-		// when the dialog box is created do the following...
-		create: function (event,ui) {
-			// body...
 		}
 	});
 }
@@ -444,41 +450,53 @@ function deleteTasksV4 () {
 ///// 		EDIT TASK FUNCTIONS
 ///////////////////////////////////////////////
 
-// to properly initalize the jQuery UI Edit button styling you must tag it when the button was created with the task item
-function editTaskButtonV1b () {
-
-	// the tasks are being dynamically generated so setting the click function on span.edit before any exist won't work
-	// we need event delegation here
-
-
-	$('#todo-list, #completed-list').on('click', 'span.edit', function () {
-
-		// don't try to chain these after the .on() method... it screws things up
-		// you must use on() method's callback function to use these
-		
-		$('span.edit').button({
-			icons: {
-				primary: 'ui-icon-wrench'
-			}
-		}).click(function() {
-			$('#edit-todo').dialog('open');
-		});
-
-		// you need this to initialize it otherwise it won't format
-		// $('.edit').click();
-
-	});
-
-}
-
 function editTaskV1 () {
 	$('#edit-todo').dialog({
 		modal: true,
 		autoOpen: false,
 		buttons: {
-			"Confirm": function () {
-				// add Edit button to each task item
-				// var editTaskHTML = '<span class="edit">Edit</span>';
+			"Confirm": function (event,ui) {
+				// need event delegation
+				// we need to set this on the span.edit of the task item elements such that when it is pressed
+
+				var $editToDoField = $('#edit-todo input');
+				// var $editToDoField = $('#input#edit-task');
+				console.log('$editToDoField', $editToDoField);
+
+				// target the triggering event...
+				// var $taskItem = ui.item.parents('ul').find('.task');
+				// Sunday, April 12, 2015 6:04 PM:  this is the problem...
+				// var $taskItem = $(thisope).parents('ul').find('.task');
+				var $taskItem = event.target.parents('ul').find('.task');
+				console.log('$taskItem', $taskItem);
+
+				// load/extract the selected task text 
+				var selectText = $taskItem.val();
+
+				// place that task text into the input#edit-task field
+				// $('input#edit-task').val(selectText);
+				$editToDoField.val(selectText);
+
+				// when the input field changes trigger this...
+				$('#edit-todo input').on('change', function(event) {
+
+					// the user edits that text field
+					// extract entered text value
+					var editedText = $editToDoField.val();
+					console.log('Edit Text: ', editedText);
+					
+					// change the selected task text in the DOM
+					$taskItem.val(editedText);
+				});
+
+				// change the selected task text in localStorage
+				var taskKeyID = $taskItem.attr('id'); // acquire unique ID key
+				console.log('Edit Task ID: ', taskKeyID);
+				removeFromLocalStorage(taskKeyID); // remove previous entry
+				addToLocalStorage(taskKeyID,editedText); // insert updated entry
+
+				// close dialog box once confirmed
+				$(this).dialog('close');
 			},
 			"Cancel": function () {
 				$(this).dialog('close');
@@ -665,6 +683,17 @@ function updateListLocation (event,ui) {
 			addToDoArray(key);
 			break;
 	}
+}
+
+function setupButtonV1 (jqObj,selector,icon,dialogSelector) {
+	// where selector, icon, dialogSelector is a string
+	jqObj.find(selector).button({
+		icons: {
+			primary: icon
+		}
+	}).click(function() {
+		$(dialogSelector).dialog('open');
+	});
 }
 
 /////////////////////////////////////////////
