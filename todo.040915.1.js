@@ -64,7 +64,7 @@ function initDoneTasksV1 () {
 			var value = localStorage[key];
 
 			// create all the completed to do items
-			createDoneToDo041115a(key,value,'done');
+			createToDo041015b(key,value,'done');
 		}
 
 		// if you leave this outside the for loop you won't create anything for each item
@@ -198,7 +198,7 @@ function createToDo041015b (keyID,valueID, status) {
 			console.log($doneTask);
 
 			// function to add Done To Do to the DOM
-			addDoneToDoToDOM041115a(keyID,$doneTask, 'done');
+			addToDoToDOM041015a(keyID,$doneTask, 'done');
 			break;
 	}
 }
@@ -219,7 +219,7 @@ function addToDoToDOM041015a (key,toDoObj,status) {
 			$newTask.show('clip',250).effect('highlight',1000);
 			break;
 		case "done":
-			var $doneTask = doneDoObj;
+			var $doneTask = toDoObj;
 			$('#completed-list').prepend($doneTask);
 			$doneTask.show('clip',250).effect('highlight',1000);
 			break;
@@ -316,31 +316,6 @@ function markTasksCompleteV3 () {
 			$this.slideDown();
 		})
 	});
-}
-
-function createDoneToDo041115a (keyID,valueID) {
-	// similar to the createToDo functions
-	var doneTaskArray = getDoneTaskArray();
-
-	var taskHTML = '<li><span class="done">%</span>';
-	taskHTML += '<span class="delete">x</span>';
-	taskHTML += '<span class="edit">Edit</span>';
-	taskHTML += '<span class="task">Bake cake</span></li>';
-	var $doneTask = $(taskHTML);
-
-	$doneTask.find('.task').text(valueID).attr('id', keyID);
-
-	$doneTask.hide();
-	console.log($doneTask);
-
-	// function to add Done To Do to the DOM
-	addDoneToDoToDOM041115a(keyID,$doneTask);
-}
-
-function addDoneToDoToDOM041115a (key,doneDoObj) {
-	var $doneTask = doneDoObj;
-	$('#completed-list').prepend($doneTask);
-	$doneTask.show('clip',250).effect('highlight',1000);
 }
 
 /////////////////////////////////////////////
@@ -683,14 +658,23 @@ function updateListLocation (event,ui) {
 //////////////////////////////////////////////
 // EXECUTION CODE
 
-// initialization function
-// required for localStorage use
-// enable if using: newToDoDialogBoxV1c()
-// init();
-// appears we must use window.onload
+
 window.onload = function () {
+
+	////////////////////////////////////////////
+	///// 		INITIALIZATION
+	//////////////////////////////////////////
+	// must happen when the window first loads
+	// initialization function
+	// required for localStorage use
+	// appears we must use window.onload
+	// reload the locally stored New tasks into DOM
 	initV2();
+	// reload the locally stored Completed tasks into DOM
 	initDoneTasksV1();
+
+	////////////////////////////////////////////
+
 	editTaskButtonV1b();
 	editTaskV1();
 }
