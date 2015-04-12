@@ -346,18 +346,9 @@ function makeListSortableV1 () {
 		placeholder: 'ui-state-highlight',
 		// identify which elements on the sortable item won't work as handlers
 		cancel: '.delete,.done',
-		// activate: function (event, ui) {
-		// 	updateListLocation(event, ui);
-		// },
 		stop: function (event, ui) {
 			updateListLocation(event, ui);
-		},
-		// change: function (event, ui) {
-		// 	updateListLocation(event, ui);
-		// },
-		// update: function (event, ui) {
-		// 	updateListLocation(event, ui);
-		// }
+		}
 	});
 }
 
@@ -474,7 +465,7 @@ function editTaskV1 () {
 		buttons: {
 			"Confirm": function () {
 				// add Edit button to each task item
-				var editTaskHTML = '<span class="edit">Edit</span>';
+				// var editTaskHTML = '<span class="edit">Edit</span>';
 			},
 			"Cancel": function () {
 				$(this).dialog('close');
@@ -687,7 +678,7 @@ makeListSortableV1();
 
 deleteTasksV4();
 
-// editTaskButtonV1b();
+editTaskButtonV1b();
 
 editTaskV1();
 
