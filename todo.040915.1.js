@@ -439,10 +439,12 @@ function editTaskButtonV1b () {
 	// the tasks are being dynamically generated so setting the click function on span.edit before any exist won't work
 	// we need event delegation here
 
-	$('#todo-list').on('click', '.edit', function () {
+
+	$('#todo-list, #completed-list').on('click', 'span.edit', function () {
 
 		// don't try to chain these after the .on() method... it screws things up
 		// you must use on() method's callback function to use these
+		
 		$('span.edit').button({
 			icons: {
 				primary: 'ui-icon-wrench'
@@ -452,7 +454,7 @@ function editTaskButtonV1b () {
 		});
 
 		// you need this to initialize it otherwise it won't format
-		$('span.edit').click();
+		// $('.edit').click();
 
 	});
 
@@ -665,6 +667,8 @@ function updateListLocation (event,ui) {
 window.onload = function () {
 	initV2();
 	initDoneTasksV1();
+	editTaskButtonV1b();
+	editTaskV1();
 }
 
 addToDoButtonV1();
@@ -678,9 +682,9 @@ makeListSortableV1();
 
 deleteTasksV4();
 
-editTaskButtonV1b();
+// editTaskButtonV1b();
+// editTaskV1();
 
-editTaskV1();
 
 /////////////////////////////////////////////
 
