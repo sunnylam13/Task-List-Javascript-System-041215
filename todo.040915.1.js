@@ -86,6 +86,7 @@ function addToDoButtonV1 () {
 		// when the add to do button is clicked you will open the #new-todo dialog box
 		$('#new-todo').dialog('open');
 	});
+
 }
 
 /////////////////////////////////////////////
@@ -167,8 +168,6 @@ function createToDo041015b (keyID,valueID,status) {
 				// });
 
 				setupButtonV1($newTask,'.edit','ui-icon-wrench','#edit-todo');
-
-
 
 				// hide this jQuery object DOM code
 				// so you can later reveal it with animations
@@ -463,11 +462,11 @@ function editTaskV1 () {
 				// var $editToDoField = $('#input#edit-task');
 				console.log('$editToDoField', $editToDoField);
 
+				// access and reference the task "id" data you stored and passed along to dialog through setupButtonV1()
+				var selectedTaskID = $('#edit-todo').data('opener');
+
 				// target the triggering event...
-				// var $taskItem = ui.item.parents('ul').find('.task');
-				// Sunday, April 12, 2015 6:04 PM:  this is the problem...
-				// var $taskItem = $(thisope).parents('ul').find('.task');
-				var $taskItem = event.target.parents('ul').find('.task');
+				var $taskItem = $('#'+selectedTaskID).parent('li').find('.task');
 				console.log('$taskItem', $taskItem);
 
 				// load/extract the selected task text 
@@ -478,22 +477,32 @@ function editTaskV1 () {
 				$editToDoField.val(selectText);
 
 				// when the input field changes trigger this...
-				$('#edit-todo input').on('change', function(event) {
+				function updateField () {
+					var finalEditText;
 
-					// the user edits that text field
-					// extract entered text value
-					var editedText = $editToDoField.val();
-					console.log('Edit Text: ', editedText);
-					
-					// change the selected task text in the DOM
-					$taskItem.val(editedText);
-				});
+					$editToDoField.on('change', function(event) {
+
+						// the user edits that text field
+						// extract entered text value
+						var editedText = $editToDoField.val();
+						console.log('Edit Text: ', editedText);
+						
+						// change the selected task text in the DOM
+						$taskItem.val(editedText);
+
+						// if I don't return this I will get an editedText = undefined error
+						finalEditText = editedText;
+					});
+
+					return finalEditText;
+				}
+				
 
 				// change the selected task text in localStorage
-				var taskKeyID = $taskItem.attr('id'); // acquire unique ID key
+				var taskKeyID = selectedTaskID; // acquire unique ID key
 				console.log('Edit Task ID: ', taskKeyID);
 				removeFromLocalStorage(taskKeyID); // remove previous entry
-				addToLocalStorage(taskKeyID,editedText); // insert updated entry
+				addToLocalStorage(taskKeyID,updateField()); // insert updated entry
 
 				// close dialog box once confirmed
 				$(this).dialog('close');
@@ -686,13 +695,20 @@ function updateListLocation (event,ui) {
 }
 
 function setupButtonV1 (jqObj,selector,icon,dialogSelector) {
+	// this function was written more for Edit Task ability
 	// where selector, icon, dialogSelector is a string
+	
+	// store a reference of the task item whose .edit the user clicked
+	var selectedTaskID = $(selector).parent('li').find('.task').attr('id');
+
 	jqObj.find(selector).button({
 		icons: {
 			primary: icon
 		}
 	}).click(function() {
-		$(dialogSelector).dialog('open');
+		// when the button is clicked you will open the dialog box selected
+		// pass the reference ID of the task item the user clicked to dialog (see http://stackoverflow.com/questions/15486081/how-to-get-the-element-id-from-which-jquery-dialog-is-called)
+		$(dialogSelector).dialog('open').data('opener', selectedTaskID);
 	});
 }
 
