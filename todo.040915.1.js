@@ -195,6 +195,8 @@ function createToDo041015b (keyID,valueID,status) {
 				addToDoToDOM041015a(key,$newTask,"new");
 			} else {
 				
+				// this code runs when we re-list all the task items upon reloading the app
+
 				// alter the base task to reflect key-value pair from localStorage
 				$newTask.find('.task').text(valueID).attr('id', keyID);
 
@@ -211,6 +213,7 @@ function createToDo041015b (keyID,valueID,status) {
 
 				// hide the task
 				$newTask.hide();
+				
 				// once created it must be added to the DOM
 				addToDoToDOM041015a(key,$newTask,"new");
 			}
@@ -460,49 +463,54 @@ function editTaskV1 () {
 
 				var $editToDoField = $('#edit-todo input');
 				// var $editToDoField = $('#input#edit-task');
-				console.log('$editToDoField', $editToDoField);
+				// console.log('$editToDoField', $editToDoField);
 
 				// access and reference the task "id" data you stored and passed along to dialog through setupButtonV1()
 				var selectedTaskID = $('#edit-todo').data('opener');
+				console.log('Edit Dialog Opener: ',selectedTaskID);
 
 				// target the triggering event...
-				var $taskItem = $('#'+selectedTaskID).parent('li').find('.task');
+				// var $taskItem = $('#'+selectedTaskID).parent('li').find('.task');
+				// I screwed up because I already have that element's target ID I don't have to go to the parent and find it again
+				var $taskItem = $('#'+selectedTaskID);
 				console.log('$taskItem', $taskItem);
+				// var $taskItem returns an object which means using val() only returns the 1st value, that's no good because I want the value of the text
 
 				// load/extract the selected task text 
 				var selectText = $taskItem.val();
+				console.log(selectText);
 
 				// place that task text into the input#edit-task field
 				// $('input#edit-task').val(selectText);
 				$editToDoField.val(selectText);
 
 				// when the input field changes trigger this...
-				function updateField () {
-					var finalEditText;
+				// function updateField () {
+				// 	var finalEditText;
 
-					$editToDoField.on('change', function(event) {
+				// 	$editToDoField.on('change', function(event) {
 
-						// the user edits that text field
-						// extract entered text value
-						var editedText = $editToDoField.val();
-						console.log('Edit Text: ', editedText);
+				// 		// the user edits that text field
+				// 		// extract entered text value
+				// 		var editedText = $editToDoField.val();
+				// 		console.log('Edit Text: ', editedText);
 						
-						// change the selected task text in the DOM
-						$taskItem.val(editedText);
+				// 		// change the selected task text in the DOM
+				// 		$taskItem.val(editedText);
 
-						// if I don't return this I will get an editedText = undefined error
-						finalEditText = editedText;
-					});
+				// 		// if I don't return this I will get an editedText = undefined error
+				// 		finalEditText = editedText;
+				// 	});
 
-					return finalEditText;
-				}
+				// 	return finalEditText;
+				// }
 				
 
 				// change the selected task text in localStorage
-				var taskKeyID = selectedTaskID; // acquire unique ID key
-				console.log('Edit Task ID: ', taskKeyID);
-				removeFromLocalStorage(taskKeyID); // remove previous entry
-				addToLocalStorage(taskKeyID,updateField()); // insert updated entry
+				// var taskKeyID = selectedTaskID; // acquire unique ID key
+				// console.log('Edit Task ID: ', taskKeyID);
+				// removeFromLocalStorage(taskKeyID); // remove previous entry
+				// addToLocalStorage(taskKeyID,updateField()); // insert updated entry
 
 				// close dialog box once confirmed
 				$(this).dialog('close');
@@ -667,6 +675,8 @@ function addToLocalStorage (key,item) {
 }
 
 function updateListLocation (event,ui) {
+	// passing the UI object only works for the Sortable widget situation
+
 	// must figure out a way to change the to do and done arrays to reflect the object's status if it's moved between the To Do and the Completed Lists
 	// say it has stopped... determine which list it is on and add it to that rolodex array while removing it from its previous one
 	
