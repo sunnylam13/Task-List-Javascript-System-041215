@@ -15,6 +15,8 @@ $(document).ready(function(e) {
 var $editTaskHTML;
 var $taskEditTarget;
 var $taskItemObject041315;
+var editTaskCounter;
+var editTaskKeyHolder;
 
 //////////////////////////////////////////////////
 // FUNCTIONS
@@ -100,6 +102,7 @@ function createNewToDo041315a () {
 	// attach jQuery UI button function and click function
 	// I want to attach this method here when I actually create the button because if I tried to do it onload it would fail to initialize until the very first time I clicked the button
 
+	// setupButtonV1($newTask,'.edit','ui-icon-wrench','#edit-todo');
 	setupButtonV1($newTask,'.edit','ui-icon-wrench','#edit-todo');
 
 	// hide this jQuery object DOM code
@@ -412,26 +415,59 @@ function deleteTasksV4 () {
 ///// 		EDIT TASK FUNCTIONS
 ///////////////////////////////////////////////
 
-function editTaskV1 () {
+function editTaskV1 (event) {
+
+	// calling this function on window.onload is pointless since you're creating Edit buttons dynamically?
+
 	$('#edit-todo').dialog({
 		modal: true,
 		autoOpen: false,
+		// open: function () {
+
+		// 	// reference the passed text key
+		// 	// you must use a string name to call the stored data!
+		// 	var key = editFieldLocale.data("editIDKey");
+		// 	// var key = editTaskKeyHolder;
+		// 	console.log('Edit Task Key: ', key);
+
+		// 	// reference the input field you will change
+		// 	var $editFieldLocale = $('#edit-todo input');
+		// 	console.log('When creating, the field is: ',$editFieldLocale);
+
+		// 	// reference the task value in the object
+		// 	var currentTaskText = getTaskText(key);
+		// 	console.log('currentTaskText',currentTaskText);
+
+		// 	// change the #edit-todo input field to match the text
+		// 	$editFieldLocale.val();
+		// },
 		buttons: {
+
 			"Confirm": function (event,ui) {
 
-				var $editToDoField = $('#edit-todo input');
+				// if the input field is text is empty then retrieve data and use
+				if ($('#edit-todo :input').val() != '') {
 
-				// access and reference the task "id" data you stored and passed along to dialog through setupButtonV1()
-				var selectedTaskID = $('#edit-todo').data('opener');
-				console.log('Edit Dialog Opener: ',selectedTaskID);
-				console.log('Edit Dialog Opener #ID: ','#'+selectedTaskID);
+					// require the targeting key of the element that activated the dialog box
+					var key = this.id;
+					console.log('The edit target key: ', key);
 
-				// load/extract the selected task text 
-				var selectText = getTaskText(selectedTaskID);
-				console.log(selectText);
+					var editedText = $('#edit-todo :input').val();
+					console.log('Newly edited text: ', editedText);
 
-				// place that task text into the input#edit-task field
-				$editToDoField.val(selectText);
+					// change the task text value in the task record object
+					
+					var toDoArray = getToDoArray();
+
+					for (var i = 0; i < toDoArray.length; i++) {
+						if (toDoArray[i].taskKey ==  key) {
+							toDoArray[i].taskValue = editedText;
+						}
+					}
+
+					addToLocalStorage("toDoArray",JSON.stringify(toDoArray));
+
+				}
 
 				// close dialog box once confirmed
 				$(this).dialog('close');
@@ -444,23 +480,38 @@ function editTaskV1 () {
 	
 }
 
-function editTaskFieldFill () {
-	$( "#edit-todo" ).on( "dialogcreate", function( event, ui ) {
-		var $editToDoField = $('#edit-todo input');
+// function editTaskFieldFill () {
 
-		// access and reference the task "id" data you stored and passed along to dialog through setupButtonV1()
-		var selectedTaskID = $('#edit-todo').data('opener');
-		console.log('Edit Dialog Opener: ',selectedTaskID);
-		console.log('Edit Dialog Opener #ID: ','#'+selectedTaskID);
+// 	// each time the dialog is created it should fill the field with the triggering element's task value (i.e. task text)
 
-		// load/extract the selected task text 
-		var selectText = getTaskText(selectedTaskID);
-		console.log(selectText);
+// 	$( "#edit-todo" ).on("dialogcreate",function(event,ui) {
 
-		// place that task text into the input#edit-task field
-		$editToDoField.val(selectText);
-	} );
-}
+// 		var $editToDoField = $('#edit-todo input');
+
+// 		// access and reference the task "id" data you stored and passed along to dialog through setupButtonV1()
+// 		// var selectedTaskID = $('#edit-todo').data('opener');
+// 		// console.log('Edit Dialog Opener: ',selectedTaskID);
+// 		// console.log('Edit Dialog Opener #ID: ','#'+selectedTaskID);
+
+// 		// var selectedTaskID = this.data('opener');
+// 		// var selectedTaskID = event.data.id;
+// 		// console.log('Edit Dialog Opener: ',selectedTaskID);
+// 		// console.log('Edit Dialog Opener #ID: ','#'+selectedTaskID);
+
+// 		// var selectedTaskID = $('#edit-todo').data('taskFieldEditArray');
+// 		// console.log('Edit Dialog Opener: ',selectedTaskID);
+// 		// console.log('Edit Dialog Opener #ID: ','#'+selectedTaskID);
+
+// 		// load/extract the selected task text 
+// 		// var selectText = getTaskText(selectedTaskID);
+// 		// console.log(selectText);
+
+// 		// place that task text into the input#edit-task field
+// 		// $editToDoField.val(selectText);
+// 		console.log(event.data.value);
+// 		$editToDoField.val(event.data.value);
+// 	} );
+// }
 
 /////////////////////////////////////////////
 
@@ -494,6 +545,29 @@ function getToDoArray () {
 	// we'll be using this inside other functions
 	// return the value so you can use result
 	return toDoArray;
+}
+
+function getTaskFieldEditArray () {
+	// grab the toDoArray out of localStorage
+	// toDoArray stores the toDo jQuery object
+	var taskFieldEditArray = localStorage["taskFieldEditArray"];
+
+	// ERROR CHECK
+	// check that there's an array that's actually in localStorage to use
+	
+	if (!taskFieldEditArray) {
+		// if there's no array create one
+		taskFieldEditArray = [];
+		// use JSON.stringify(ARRAY)
+		localStorage.setItem("taskFieldEditArray", JSON.stringify(taskFieldEditArray));
+	} else {
+		// else toDoArray exists so you'll need to convert it from json string to array
+		taskFieldEditArray = JSON.parse(taskFieldEditArray);
+	}
+
+	// we'll be using this inside other functions
+	// return the value so you can use result
+	return taskFieldEditArray;
 }
 
 /////////////////////////////////////////////
@@ -627,63 +701,48 @@ function updateListLocationV2 (event,ui) {
 
 			break;
 	}
-
-	// if (determineList == 'completed-list') {
-	// 	// changeTaskStatus(key,"done");
-	// 	// store a reference to the array
-	// 	var toDoArray = getToDoArray();
-
-	// 	// $.each(toDoArray, function(index, val) {
-	// 	// 	var setStatus = "done";
-	// 	// 	if (toDoArray.taskKey == key) {
-	// 	// 		toDoArray[index].taskStatus = setStatus;
-	// 	// 		console.log('The %s item status is now %s', setStatus, toDoArray[index].taskStatus);
-
-	// 	// 		// restore array into localStorage for later retrieval
-	// 	// 		localStorage.setItem("toDoArray",JSON.stringify(toDoArray));
-	// 	// 	}
-	// 	// });
-	// 	console.log('Added to Completed List');
-	// } else if (determineList == 'todo-list') {
-	// 	var setStatus = "todo";
-	// 	// changeTaskStatus(key, "todo");
-	// 	// $.each(toDoArray, function(index, val) {
-	// 	// 	if (toDoArray.taskKey == key) {
-	// 	// 		toDoArray[index].taskStatus = setStatus;
-	// 	// 		console.log('The %s item status is now %s', setStatus, toDoArray[index].taskStatus);
-
-	// 	// 		// restore array into localStorage for later retrieval
-	// 	// 		localStorage.setItem("toDoArray",JSON.stringify(toDoArray));
-	// 	// 	}
-	// 	// });
-	// 	console.log('Added to To Do List');
-	// }
 }
 
 function setupButtonV1 (jqObj,selector,icon,dialogSelector) {
 	// this function was written more for Edit Task ability
-	// where selector, icon, dialogSelector is a string
 	
-	// store a reference of the task item whose .edit the user clicked
-	// Monday, April 13, 2015 11:23 PM...  it seems that I can't select the task .edit ID of the last object created within the array
-	// var selectedTaskID = $(selector).parent('li').find('.task').attr('id');
-	// if (selectedTaskID == (null || undefined)) {
-	// 	selectedTaskID = $(selector).siblings('.task').attr('id');
-	// }
-	var selectedTaskID = $(selector).siblings('.task').attr('id');
+	var selectedTaskID = $(selector).parents('li').find('.task').attr('id');
+	
 	console.log('The selected task ID setup on .edit is: ',selectedTaskID);
+
+	// var finalTaskID = $(selector).parents('li').find('.task').last().attr('id');
 
 	jqObj.find(selector).button({
 		icons: {
 			primary: icon
 		}
-	}).click(function() {
-		// when the button is clicked you will open the dialog box selected
-		// pass the reference ID of the task item the user clicked to dialog (see http://stackoverflow.com/questions/15486081/how-to-get-the-element-id-from-which-jquery-dialog-is-called)
-		// $(dialogSelector).dialog('open').data('opener', selectedTaskID);
-		$(dialogSelector).dialog('open').data('opener', this.id);
+	}).click(function(event) {
 
-		// it may be easier to simply store this data in the task record object instead
+		console.log('The .edit button has been clicked');
+
+		// editTaskKeyHolder = selectedTaskID;
+		// $( "#edit-todo" ).dialog('open');
+
+		// pass the task ID data to the #edit-todo dialog div
+		// $('#edit-todo').dialog('open');
+		// $('#edit-todo').dialog('open').data('editIDKey', selectedTaskID);
+		// $('#edit-todo').dialog('open').data('editIDKey', event.data.id);
+		// $('#edit-todo').dialog('open').data('editIDKey', this.id);
+
+		// $( "#edit-todo" ).dialog({
+		//   open: function( event, ui ) {
+		//   	// store the ID in var editTaskKeyHolder
+		//   	editTaskKeyHolder = selectedTaskID;
+		//   }
+		// });
+
+		// $( "#edit-todo" ).on("dialogopen", function(event, ui) {
+		// 	// store the ID in var editTaskKeyHolder
+		// 	editTaskKeyHolder = selectedTaskID;
+		// });
+		
+		$( "#edit-todo" ).dialog('open');
+
 	});
 }
 
@@ -743,8 +802,11 @@ window.onload = function () {
 	//////////////////////////////////////////
 
 	// editTaskButtonV1b();
+	
+	// instead of calling editTask here call it when the button is created
 	editTaskV1();
-	editTaskFieldFill();
+
+	// editTaskFieldFill();
 }
 
 addToDoButtonV1();
